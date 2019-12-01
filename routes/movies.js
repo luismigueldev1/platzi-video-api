@@ -1,10 +1,13 @@
 const express = require("express")
 const router = express.Router()
-const moviesAPI = require("../utils/mocks/movies.json")
+const MoviesService = require("../services/movies")
+
+const ms = new MoviesService()
 
 router.get("/", async function (req, res, next) {
+    const { tags } = req.query
     try {
-        const movies = await moviesAPI
+        const movies = await ms.getMovies({ tags })
 
         res.status(200).json({
             data: movies,
@@ -16,8 +19,9 @@ router.get("/", async function (req, res, next) {
 })
 
 router.get("/:movieID", async function (req, res, next) {
+    const { movieID } = req.params
     try {
-        const movie = await moviesAPI[0]
+        const movie = await ms.getMovie({ movieID })
 
         res.status(200).json({
             data: movie,
@@ -29,8 +33,9 @@ router.get("/:movieID", async function (req, res, next) {
 })
 
 router.post("/", async function (req, res, next) {
+    const { body: movie } = req
     try {
-        const createMovieID = await moviesAPI[0].id
+        const createMovieID = await ms.createMovie({ movie })
 
         res.status(201).json({
             data: createMovieID,
@@ -42,8 +47,10 @@ router.post("/", async function (req, res, next) {
 })
 
 router.put("/:movieID", async function (req, res, next) {
+    const { movieID } = req.params
+    const { body: movie } = req
     try {
-        const updateMovieID = await moviesAPI[0].id
+        const updateMovieID = await ms.updateMovie({ movieID, movie })
 
         res.status(200).json({
             data: updateMovieID,
@@ -55,8 +62,9 @@ router.put("/:movieID", async function (req, res, next) {
 })
 
 router.delete("/:movieID", async function (req, res, next) {
+    const { movieID } = req.params
     try {
-        const deleteMovieID = await moviesAPI[0].id
+        const deleteMovieID = await ms.deleteMovie({ movieID })
 
         res.status(200).json({
             data: deleteMovieID,
@@ -66,5 +74,22 @@ router.delete("/:movieID", async function (req, res, next) {
         next(err)
     }
 })
+
+router.patch("/:movieID", async function (req, res, next) {
+    const { movieID } = req.params
+    const { body: movie } = req
+    try {
+        const updateMovieID = await ms.updateMovie({ movieID, movie })
+
+        res.status(200).json({
+            data: updateMovieID,
+            message: "Movie updated"
+        })
+    } catch (err) {
+        next(err)
+    }
+})
+
+
 
 module.exports = router;
