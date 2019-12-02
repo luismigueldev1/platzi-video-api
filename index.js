@@ -4,6 +4,9 @@ const app = express()
 const config = require("./config")
 const moviesRouter = require("./routes/movies")
 
+//middlewares
+app.use(express.json())
+
 app.use("/api/movies", moviesRouter)
 
 app.listen(config.port, function () {
