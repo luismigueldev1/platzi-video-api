@@ -2,9 +2,17 @@ const express = require("express")
 const router = express.Router()
 const MoviesService = require("../services/movies")
 
+
 const ms = new MoviesService()
+const cacheResponse = require("../utils/cacheResponse")
+const {
+    SIXTY_MINUTES_IN_SECONDS,
+    FIVE_MINUTES_IN_SECONDS
+} = require("../utils/time")
 
 router.get("/", async function (req, res, next) {
+    cacheResponse(res, FIVE_MINUTES_IN_SECONDS)
+
     const { tags } = req.query
     try {
         const movies = await ms.getMovies({ tags })
@@ -19,6 +27,7 @@ router.get("/", async function (req, res, next) {
 })
 
 router.get("/:movieID", async function (req, res, next) {
+    cacheResponse(res, SIXTY_MINUTES_IN_SECONDS)
     const { movieID } = req.params
     try {
         const movie = await ms.getMovie({ movieID })
